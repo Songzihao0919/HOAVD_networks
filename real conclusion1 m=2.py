@@ -9,7 +9,7 @@ import math
 import csv
 from tqdm import tqdm  # 导入tqdm
 
-
+print()
 class HigherOrderNetworkAnalyzer:
     def __init__(self, file_path):
         self.file_path = file_path
