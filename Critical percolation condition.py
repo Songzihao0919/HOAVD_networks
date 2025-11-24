@@ -141,19 +141,19 @@ def visualize_results(results, n, m_order, dist_type, gamma=None):
     fig, ax = plt.subplots(figsize=(10, 6))
 
     # 构建标题
-    title_text = f"Steady-state Hypergraph Percolation: n={n}, m={m_order}"
+    title_text = f"(a) Steady-state Hypergraph Percolation: n={n}, m={m_order}"
     # 根据分布类型添加描述
     if dist_type == 'powerlaw' and gamma:
-        title_text += f", powerlaw dist, γ={gamma}"
+        title_text += f", powerlaw distribution, γ={gamma}"
     else:
-        title_text += f", uniform dist"
+        title_text += f", uniform distribution"
 
     # 设置标题（只调用一次）
     plt.title(title_text, fontsize=14)
 
     # 巨连通分量曲线
     ax.semilogx(results['scaling_factors'], results['giant_component'], 'g-',
-                marker='s', markersize=5, linewidth=2, label='Giant Component')
+                marker='s', markersize=5, linewidth=2, label='Largest Connected Component')
 
     # 添加临界点标记
     critical_c = results['experimental_critical']
@@ -181,7 +181,7 @@ def visualize_results(results, n, m_order, dist_type, gamma=None):
                    linewidth=1.5, label=f'Experiment: {exp_critical:.2e}')
 
     ax.set_xlabel('Scaling Factor (c)', fontsize=12)
-    ax.set_ylabel('Relative Giant Component', fontsize=12, color='g')
+    ax.set_ylabel('Size of Largest Connected Component', fontsize=12, color='g')
     ax.tick_params(axis='y', labelcolor='g')
     ax.grid(True, linestyle='--', alpha=0.7)
     ax.set_xscale('log')
@@ -210,9 +210,9 @@ def visualize_results(results, n, m_order, dist_type, gamma=None):
 
 def main():
     # 参数配置 - 使用大网络测试
-    n = 10000  # 节点数
+    n = 100000  # 节点数
     m_order = 3  # 超边阶数
-    dist_type = 'powerlaw' #'uniform'
+    dist_type = 'uniform' #'powerlaw'
     gamma = 2.5
 
     # 初始化模型 - 专注巨连通分量

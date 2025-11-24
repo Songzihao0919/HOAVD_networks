@@ -180,7 +180,7 @@ class SteadyStateProbabilityValidator:
 
         # Create figure with 4 subplots
         fig, axs = plt.subplots(2, 2, figsize=(16, 12))
-        fig.suptitle('Steady-State Probability Convergence for Selected Hyperedges (T=10000>>403^1)', fontsize=16)
+        fig.suptitle('(a) Steady-State Probability Convergence for Selected Hyperedges (m=1, T=10000>>403^1)', fontsize=16)
 
         # Validate convergence for each edge
         results = []
@@ -238,9 +238,9 @@ class SteadyStateProbabilityValidator:
             ax.semilogx(T_points, empirical_probs, 'bo-', markersize=4, label='Empirical Probability')
 
             # Set title and labels - FIXED: Ensure integer formatting
-            ax.set_title(f'Edge (node {int(node1)}, node {int(node2)})', fontsize=12)
-            ax.set_xlabel('Time (T)')
-            ax.set_ylabel('Edge Probability')
+            ax.set_title(f'Hyperedge (node {int(node1)}, node {int(node2)})', fontsize=12)
+            ax.set_xlabel('Time Step(T)')
+            ax.set_ylabel('Hyperedge Probability')
             ax.grid(True, which="both", linestyle='--', alpha=0.7)
             ax.legend()
 
@@ -259,8 +259,8 @@ class SteadyStateProbabilityValidator:
 
         # Adjust layout and save figure
         plt.tight_layout(rect=[0, 0, 1, 0.96])  # Make room for suptitle
-        plt.savefig('edge_convergence_summary.png', dpi=300)
-        print("\nVisualization saved to 'edge_convergence_summary.png'")
+        plt.savefig('hyperedge_convergence_summary.png', dpi=300)
+        print("\nVisualization saved to 'hyperedge_convergence_summary.png'")
 
         # Print summary
         print("\n=== Validation Summary ===")

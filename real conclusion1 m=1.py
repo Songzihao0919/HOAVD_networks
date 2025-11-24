@@ -227,7 +227,7 @@ class DynamicNetworkAnalyzer:
         print("\n=== Conclusion Validation ===")
 
         # Conclusion 1: Vulnerability negligible at T << n
-        cc_diff_short = abs(cc_hoavd_short - cc_hoad_short)/cc_hoavd_short
+        cc_diff_short = abs(cc_hoavd_short - cc_hoad_short) / cc_hoavd_short if cc_hoavd_short > 0 else 0
         if cc_diff_short < 0.1:
             print(f"✅ Conclusion 1 verified: At T={T_short}<<n={n}, difference in CC size ({cc_diff_short:.4f}) < 0.1")
         else:
@@ -251,48 +251,82 @@ class DynamicNetworkAnalyzer:
         self.visualize_results(
             cc_hoavd_short, cc_hoad_short, cc_hoavd_long, cc_hoad_long,
             avg_deg_hoavd_short, avg_deg_hoad_short, avg_deg_hoavd_long, avg_deg_hoad_long,
-            T_short, T_long, left_side, right_side
+            T_short, T_long, left_side, right_side, n
         )
 
     def visualize_results(self, cc_hoavd_short, cc_hoad_short, cc_hoavd_long, cc_hoad_long,
                           avg_deg_hoavd_short, avg_deg_hoad_short, avg_deg_hoavd_long, avg_deg_hoad_long,
-                          T_short, T_long, left_side, right_side):
+                          T_short, T_long, left_side, right_side, n):
         """Visualize results"""
         fig, ax = plt.subplots(2, 2, figsize=(14, 10))
 
+        # 添加总标题
+        fig.suptitle('(a) m=1', fontsize=16, fontweight='bold', y=0.95)
+
         # Short timescale CC comparison
-        ax[0, 0].bar(['HOAVD', 'HOAD'], [cc_hoavd_short, cc_hoad_short], color=['blue', 'orange'])
+        bars1 = ax[0, 0].bar(['HOAVD', 'HOAD'], [cc_hoavd_short, cc_hoad_short], color=['blue', 'orange'])
         ax[0, 0].set_title(f'Short Timescale (T={T_short}<<n^1={n})')
-        ax[0, 0].set_ylabel('Largest CC Size')
+        ax[0, 0].set_ylabel('Size of Largest Connected Component')
         ax[0, 0].set_ylim(0, 1)
 
+        # 在柱状图上添加数值标注
+        for bar, value in zip(bars1, [cc_hoavd_short, cc_hoad_short]):
+            height = bar.get_height()
+            ax[0, 0].text(bar.get_x() + bar.get_width() / 2., height + 0.01,
+                          f'{value:.4f}', ha='center', va='bottom', fontweight='bold')
+
         # Short timescale degree comparison
-        ax[0, 1].bar(['HOAVD', 'HOAD'], [avg_deg_hoavd_short, avg_deg_hoad_short], color=['blue', 'orange'])
+        bars2 = ax[0, 1].bar(['HOAVD', 'HOAD'], [avg_deg_hoavd_short, avg_deg_hoad_short], color=['blue', 'orange'])
         ax[0, 1].set_title(f'Short Timescale (T={T_short}<<n^1={n})')
-        ax[0, 1].set_ylabel('Average Degree')
+        ax[0, 1].set_ylabel('Average Hyperdegree')
+        ax[0, 1].set_ylim(0, 10)
+
+        # 在柱状图上添加数值标注
+        for bar, value in zip(bars2, [avg_deg_hoavd_short, avg_deg_hoad_short]):
+            height = bar.get_height()
+            ax[0, 1].text(bar.get_x() + bar.get_width() / 2., height + 0.01,
+                          f'{value:.4f}', ha='center', va='bottom', fontweight='bold')
 
         # Long timescale CC comparison
-        ax[1, 0].bar(['HOAVD', 'HOAD'], [cc_hoavd_long, cc_hoad_long], color=['blue', 'orange'])
+        bars3 = ax[1, 0].bar(['HOAVD', 'HOAD'], [cc_hoavd_long, cc_hoad_long], color=['blue', 'orange'])
         ax[1, 0].set_title(f'Long Timescale (T={T_long}>>n^1={n})')
-        ax[1, 0].set_ylabel('Largest CC Size')
+        ax[1, 0].set_ylabel('Size of Largest Connected Component')
         ax[1, 0].set_ylim(0, 1)
 
-        # Long timescale degree comparison
-        ax[1, 1].bar(['HOAVD', 'HOAD'], [avg_deg_hoavd_long, avg_deg_hoad_long], color=['blue', 'orange'])
-        ax[1, 1].set_title(f'Long Timescale (T={T_long}>>n^1={n})')
-        ax[1, 1].set_ylabel('Average Degree')
+        # 在柱状图上添加数值标注
+        for bar, value in zip(bars3, [cc_hoavd_long, cc_hoad_long]):
+            height = bar.get_height()
+            ax[1, 0].text(bar.get_x() + bar.get_width() / 2., height + 0.01,
+                          f'{value:.4f}', ha='center', va='bottom', fontweight='bold')
 
-        plt.tight_layout()
-        plt.savefig('conclusion_validation.png')
+        # Long timescale degree comparison
+        bars4 = ax[1, 1].bar(['HOAVD', 'HOAD'], [avg_deg_hoavd_long, avg_deg_hoad_long], color=['blue', 'orange'])
+        ax[1, 1].set_title(f'Long Timescale (T={T_long}>>n^1={n})')
+        ax[1, 1].set_ylabel('Average Hyperdegree')
+        ax[1, 1].set_ylim(0, 10)
+
+        # 在柱状图上添加数值标注
+        for bar, value in zip(bars4, [avg_deg_hoavd_long, avg_deg_hoad_long]):
+            height = bar.get_height()
+            ax[1, 1].text(bar.get_x() + bar.get_width() / 2., height + 0.01,
+                          f'{value:.4f}', ha='center', va='bottom', fontweight='bold')
+
+        plt.tight_layout(rect=[0, 0, 1, 0.96])  # 为顶部标题留出空间
+        plt.savefig('higher_order_conclusion_validation_m1.png', dpi=300, bbox_inches='tight')
 
         # Create a separate figure for theoretical results
         fig2, ax2 = plt.subplots(figsize=(8, 6))
-        ax2.bar(['Left Side', 'Right Side'], [left_side, right_side], color=['green', 'red'])
+        bars_theory = ax2.bar(['Left Side', 'Right Side'], [left_side, right_side], color=['green', 'red'])
         ax2.set_title('Theoretical Percolation Threshold')
         ax2.set_ylabel('Value')
-        ax2.text(0, left_side, f'{left_side:.6f}', ha='center', va='bottom')
-        ax2.text(1, right_side, f'{right_side:.6f}', ha='center', va='bottom')
-        plt.savefig('theoretical_percolation.png')
+
+        # 在理论图的柱状图上也添加数值标注
+        for bar, value in zip(bars_theory, [left_side, right_side]):
+            height = bar.get_height()
+            ax2.text(bar.get_x() + bar.get_width() / 2., height + 0.001,
+                     f'{value:.6f}', ha='center', va='bottom', fontweight='bold')
+
+        plt.savefig('theoretical_percolation_m1.png', dpi=300, bbox_inches='tight')
 
         print("\nVisualizations saved to 'conclusion_validation.png' and 'theoretical_percolation.png'")
 

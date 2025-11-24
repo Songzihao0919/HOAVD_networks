@@ -225,7 +225,7 @@ class SteadyStateProbabilityValidatorM2:
 
         # Create figure with 4 subplots
         fig, axs = plt.subplots(2, 2, figsize=(16, 12))
-        fig.suptitle('Steady-State Probability Convergence for Selected Hyperedges (m=2, T=10000000>>403^2)', fontsize=16)
+        fig.suptitle('(b) Steady-State Probability Convergence for Selected Hyperedges (m=2, T=10000000>>403^2)', fontsize=16)
 
         # Validate convergence for each hyperedge
         results = []
@@ -285,7 +285,7 @@ class SteadyStateProbabilityValidatorM2:
 
             # Set title and labels
             ax.set_title(f'Hyperedge (node {int(node1)}, node {int(node2)}, node {int(node3)})', fontsize=12)
-            ax.set_xlabel('Time (T)')
+            ax.set_xlabel('Time Step(T)')
             ax.set_ylabel('Hyperedge Probability')
             ax.grid(True, which="both", linestyle='--', alpha=0.7)
             ax.legend()

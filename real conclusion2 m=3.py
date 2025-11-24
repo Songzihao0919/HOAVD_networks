@@ -269,7 +269,7 @@ class HyperedgeConvergenceValidatorM3:
 
             # Set title and labels
             ax.set_title(f'Hyperedge (nodes {int(node1)}, {int(node2)}, {int(node3)}, {int(node4)})', fontsize=12)
-            ax.set_xlabel('Time (T)')
+            ax.set_xlabel('Time Step(T)')
             ax.set_ylabel('Hyperedge Probability')
             ax.grid(True, which="both", linestyle='--', alpha=0.7)
             ax.legend()

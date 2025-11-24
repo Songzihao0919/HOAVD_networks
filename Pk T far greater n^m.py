@@ -100,6 +100,7 @@ def main():
     alpha = 2.5  # 幂律分布参数
     min_val, max_val = 0.01, 1.0  # 取值范围
 
+
     # 生成节点属性
     a, b = generate_node_attributes(n, alpha, min_val, max_val)
 
@@ -107,6 +108,9 @@ def main():
     fig, axes = plt.subplots(1, len(m_values), figsize=(18, 5))
     if len(m_values) == 1:
         axes = [axes]
+
+    # 添加大标题 - 修改的部分
+    #fig.suptitle(r"(a) $T \gg n^m$", fontsize=16, y=0.98)  # y参数控制标题位置
 
     for i, m in enumerate(m_values):
         print(f"\nProcessing m = {m}...")
@@ -130,16 +134,16 @@ def main():
         ax = axes[i]
         ax.plot(k_values, p_k_theory, 'b-', linewidth=2, label='Theoretical')
         ax.plot(k_values, p_k_sim, 'r--', linewidth=2, label='Simulated')
-        ax.set_xlabel('Degree k')
+        ax.set_xlabel('Hyperdegree (k)')
         ax.set_ylabel('Normalized P(k)')
-        ax.set_title(f'm = {m}, n = {n}')
+        ax.set_title(f'(a) $T \gg n^m$, m = {m}, n = {n}')
         ax.legend()
         ax.grid(True)
 
         print(f"Completed m={m} in {time.time() - start_time:.2f} seconds")
 
     plt.tight_layout()
-    plt.savefig('degree_distribution_comparison.png', dpi=300)
+    plt.savefig('hyperdegree_distribution_comparison_T far greater n^m m=5.png', dpi=300)
     plt.show()
 
 

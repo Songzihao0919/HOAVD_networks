@@ -214,9 +214,9 @@ def unified_validation(n, m, dist_type='uniform'):
     plt.axvline(x=n ** m * 100, color='orange', linestyle=':',
                 label=r'$n^m \times 100$')
 
-    plt.xlabel('Time Steps (T)')
-    plt.ylabel('Edge Probability')
-    plt.title(f'Hyperedge Dynamics (n={n}, hyperedge size={m + 1}, {dist_type} dist)')
+    plt.xlabel('Time Step (T)')
+    plt.ylabel('Hyperedge Existence Probability')
+    plt.title(f'Hyperedge Dynamics (n={n}, m={m}, {dist_type} distribution)')
     plt.legend()
     plt.grid(True, which="both", linestyle='--', alpha=0.7)
     plt.savefig(f'dynamics_{dist_type}_n{n}_m{m}.png', dpi=300)
@@ -285,7 +285,7 @@ def safe_division(numerator, denominator, default=0):
 def main():
     # 设置较大的n值以减少边界效应
     n = 100000  # 节点数
-    m = 1  # 超边大小为m+1
+    m = 3  # 超边大小为m+1
 
     print("\n" + "=" * 50)
     print("Validating for large network: Uniform Distribution")

@@ -272,17 +272,37 @@ class HigherOrderNetworkAnalyzer:
         # Extend time dimension
         extended_hyper_edges = self.extend_temporal_dimension(T_long)
 
-        # Simulate networks
-        print("\nSimulating networks...")
+        # Simulate networks for short timescale
+        print("\nSimulating networks for short timescale (T=3000)...")
         hyperedges_hoavd_short = self.simulate_network(extended_hyper_edges, T_short, 'HOAVD')
         hyperedges_hoad_short = self.simulate_network(extended_hyper_edges, T_short, 'HOAD')
+
+        # Calculate metrics for short timescale
+        print("\nCalculating metrics for short timescale...")
+        avg_deg_hoavd_short, cc_hoavd_short = self.calculate_network_metrics(hyperedges_hoavd_short)
+        avg_deg_hoad_short, cc_hoad_short = self.calculate_network_metrics(hyperedges_hoad_short)
+
+        # Output short timescale results immediately
+        print("\n=== Short Timescale (T=3000) Results ===")
+        print(f"HOAVD model: Avg degree = {avg_deg_hoavd_short:.4f}, Largest CC = {cc_hoavd_short:.4f}")
+        print(f"HOAD model: Avg degree = {avg_deg_hoad_short:.4f}, Largest CC = {cc_hoad_short:.4f}")
+
+        # Ask user if they want to continue to long timescale simulation
+        print("\nShort timescale simulation completed. Would you like to continue to long timescale simulation?")
+        print("This may take a long time. Enter 'y' to continue or any other key to exit.")
+
+        user_input = input("Continue? (y/n): ").strip().lower()
+        if user_input != 'y':
+            print("Exiting as per user request.")
+            return
+
+        # Simulate networks for long timescale
+        print("\nSimulating networks for long timescale...")
         hyperedges_hoavd_long = self.simulate_network(extended_hyper_edges, T_long, 'HOAVD')
         hyperedges_hoad_long = self.simulate_network(extended_hyper_edges, T_long, 'HOAD')
 
-        # Calculate metrics
-        print("\nCalculating metrics...")
-        avg_deg_hoavd_short, cc_hoavd_short = self.calculate_network_metrics(hyperedges_hoavd_short)
-        avg_deg_hoad_short, cc_hoad_short = self.calculate_network_metrics(hyperedges_hoad_short)
+        # Calculate metrics for long timescale
+        print("\nCalculating metrics for long timescale...")
         avg_deg_hoavd_long, cc_hoavd_long = self.calculate_network_metrics(hyperedges_hoavd_long)
         avg_deg_hoad_long, cc_hoad_long = self.calculate_network_metrics(hyperedges_hoad_long)
 
@@ -300,7 +320,7 @@ class HigherOrderNetworkAnalyzer:
         print("\n=== Conclusion Validation ===")
 
         # Conclusion 1: Vulnerability negligible at T << n^m
-        cc_diff_short = abs(cc_hoavd_short - cc_hoad_short) / cc_hoavd_short
+        cc_diff_short = abs(cc_hoavd_short - cc_hoad_short) / cc_hoavd_short if cc_hoavd_short > 0 else 0
         if cc_diff_short < 0.2:
             print(
                 f"✅ Conclusion 1 verified: At T={T_short}<<n^m={n_m}, HOAVD and HOAD CC size difference ({cc_diff_short:.4f}) < 0.05")
@@ -334,41 +354,76 @@ class HigherOrderNetworkAnalyzer:
         """Visualize results"""
         fig, ax = plt.subplots(2, 2, figsize=(14, 10))
 
+        # 添加总标题
+        fig.suptitle('(b) m=2', fontsize=16, fontweight='bold', y=0.95)
+
         # Short timescale CC comparison
-        ax[0, 0].bar(['HOAVD', 'HOAD'], [cc_hoavd_short, cc_hoad_short], color=['blue', 'orange'])
+        bars1 = ax[0, 0].bar(['HOAVD', 'HOAD'], [cc_hoavd_short, cc_hoad_short], color=['blue', 'orange'])
         ax[0, 0].set_title(f'Short Timescale (T={T_short} << n^2={n_m})')
-        ax[0, 0].set_ylabel('Largest Connected Component')
+        ax[0, 0].set_ylabel('Size of Largest Connected Component')
         ax[0, 0].set_ylim(0, 1)
 
+        # 在柱状图上添加数值标注
+        for bar, value in zip(bars1, [cc_hoavd_short, cc_hoad_short]):
+            height = bar.get_height()
+            ax[0, 0].text(bar.get_x() + bar.get_width() / 2., height + 0.01,
+                          f'{value:.4f}', ha='center', va='bottom', fontweight='bold')
+
         # Short timescale degree comparison
-        ax[0, 1].bar(['HOAVD', 'HOAD'], [avg_deg_hoavd_short, avg_deg_hoad_short], color=['blue', 'orange'])
+        bars2 = ax[0, 1].bar(['HOAVD', 'HOAD'], [avg_deg_hoavd_short, avg_deg_hoad_short], color=['blue', 'orange'])
         ax[0, 1].set_title(f'Short Timescale (T={T_short} << n^2={n_m})')
-        ax[0, 1].set_ylabel('Average Degree')
+        ax[0, 1].set_ylabel('Average Hyperdegree')
+        ax[0, 1].set_ylim(0, 20)
+
+        # 在柱状图上添加数值标注
+        for bar, value in zip(bars2, [avg_deg_hoavd_short, avg_deg_hoad_short]):
+            height = bar.get_height()
+            ax[0, 1].text(bar.get_x() + bar.get_width() / 2., height + 0.01,
+                          f'{value:.4f}', ha='center', va='bottom', fontweight='bold')
 
         # Long timescale CC comparison
-        ax[1, 0].bar(['HOAVD', 'HOAD'], [cc_hoavd_long, cc_hoad_long], color=['blue', 'orange'])
+        bars3 = ax[1, 0].bar(['HOAVD', 'HOAD'], [cc_hoavd_long, cc_hoad_long], color=['blue', 'orange'])
         ax[1, 0].set_title(f'Long Timescale (T={T_long} >> n^2={n_m})')
-        ax[1, 0].set_ylabel('Largest Connected Component')
+        ax[1, 0].set_ylabel('Size of Largest Connected Component')
         ax[1, 0].set_ylim(0, 1)
 
-        # Long timescale degree comparison
-        ax[1, 1].bar(['HOAVD', 'HOAD'], [avg_deg_hoavd_long, avg_deg_hoad_long], color=['blue', 'orange'])
-        ax[1, 1].set_title(f'Long Timescale (T={T_long} >> n^2={n_m})')
-        ax[1, 1].set_ylabel('Average Degree')
+        # 在柱状图上添加数值标注
+        for bar, value in zip(bars3, [cc_hoavd_long, cc_hoad_long]):
+            height = bar.get_height()
+            ax[1, 0].text(bar.get_x() + bar.get_width() / 2., height + 0.01,
+                          f'{value:.4f}', ha='center', va='bottom', fontweight='bold')
 
-        plt.tight_layout()
-        plt.savefig('higher_order_conclusion_validation_m2_gai.png')
+        # Long timescale degree comparison
+        bars4 = ax[1, 1].bar(['HOAVD', 'HOAD'], [avg_deg_hoavd_long, avg_deg_hoad_long], color=['blue', 'orange'])
+        ax[1, 1].set_title(f'Long Timescale (T={T_long} >> n^2={n_m})')
+        ax[1, 1].set_ylabel('Average Hyperdegree')
+        ax[1, 1].set_ylim(0, 20)
+
+        # 在柱状图上添加数值标注
+        for bar, value in zip(bars4, [avg_deg_hoavd_long, avg_deg_hoad_long]):
+            height = bar.get_height()
+            ax[1, 1].text(bar.get_x() + bar.get_width() / 2., height + 0.01,
+                          f'{value:.4f}', ha='center', va='bottom', fontweight='bold')
+
+        plt.tight_layout(rect=[0, 0, 1, 0.96])  # 为顶部标题留出空间
+        plt.savefig('higher_order_conclusion_validation_m2_gai.png', dpi=300, bbox_inches='tight')
 
         # Create a separate figure for theoretical results
         fig2, ax2 = plt.subplots(figsize=(8, 6))
-        ax2.bar(['Left Side', 'Right Side'], [left_side, right_side], color=['green', 'red'])
+        bars_theory = ax2.bar(['Left Side', 'Right Side'], [left_side, right_side], color=['green', 'red'])
         ax2.set_title('Theoretical Percolation Threshold (m=2)')
         ax2.set_ylabel('Value')
-        ax2.text(0, left_side, f'{left_side:.6f}', ha='center', va='bottom')
-        ax2.text(1, right_side, f'{right_side:.6f}', ha='center', va='bottom')
-        plt.savefig('theoretical_percolation_m2_gai.png')
 
-        print("\nVisualizations saved to 'higher_order_conclusion_validation_m2_gai.png' and 'theoretical_percolation_m2_gai.png'")
+        # 在理论图的柱状图上也添加数值标注
+        for bar, value in zip(bars_theory, [left_side, right_side]):
+            height = bar.get_height()
+            ax2.text(bar.get_x() + bar.get_width() / 2., height + 0.001,
+                     f'{value:.6f}', ha='center', va='bottom', fontweight='bold')
+
+        plt.savefig('theoretical_percolation_m2_gai.png', dpi=300, bbox_inches='tight')
+
+        print(
+            "\nVisualizations saved to 'higher_order_conclusion_validation_m2_gai.png' and 'theoretical_percolation_m2_gai.png'")
 
 
 # Main program

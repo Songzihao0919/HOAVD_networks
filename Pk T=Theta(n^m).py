@@ -112,6 +112,9 @@ def main():
     if len(m_values) == 1:
         axes = [axes]
 
+    # 添加大标题 - 修改的部分
+    #fig.suptitle(r"(b) $T = \Theta(n^m)$", fontsize=16, y=0.98)  # y参数控制标题位置
+
     for i, m in enumerate(m_values):
         print(f"\nProcessing m = {m}...")
         start_time = time.time()
@@ -134,16 +137,16 @@ def main():
         ax = axes[i]
         ax.plot(k_values, p_k_theory, 'b-', linewidth=2, label='Theoretical')
         ax.plot(k_values, p_k_sim, 'r--', linewidth=2, label='Simulated')
-        ax.set_xlabel('Degree k')
+        ax.set_xlabel('Hyperdegree (k)')
         ax.set_ylabel('Normalized P(k)')
-        ax.set_title(f'm = {m}, n = {n}')
+        ax.set_title(f'(b) $T = \Theta(n^m)$, m = {m}, n = {n}')
         ax.legend()
         ax.grid(True)
 
         print(f"Completed m={m} in {time.time() - start_time:.2f} seconds")
 
     plt.tight_layout()
-    plt.savefig('degree_distribution_comparison.png', dpi=300)
+    plt.savefig('hyperdegree_distribution_comparison_T=Theta(n^m) m=5.png', dpi=300)
     plt.show()
 
 
